@@ -3,9 +3,9 @@ import { uglify } from "rollup-plugin-uglify";
 import scss from 'rollup-plugin-scss';
 
 export default {
-  input: 'src/main.js',
+  input: 'src/index.js',
   output: {
-    file: 'dist/index.min.js',
+    file: 'dist/index.js',
     format: 'iife',
     sourcemap: 'inline',
   },

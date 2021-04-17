@@ -6,15 +6,16 @@ import { Boid } from './boid';
 function size() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-}
-;
+};
+canvas.style.backgroundColor = 'black';
+
 size();
 window.addEventListener('resize', size());
 
 const boids = [];
 function init() {
     for (let i = 0; i < 1; i++) {
-        boids.push(new Boid(new Vector2D(2, 2), new Vector2D(3, 10)));
+        boids.push(new Boid(c, new Vector2D(2, 2), new Vector2D(3, 10)));
     }
 }
 function display() {
