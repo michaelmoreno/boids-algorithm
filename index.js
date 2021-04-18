@@ -16,24 +16,30 @@ const two = new Vector2D(5, 10);
 
 const boids = [];
 function init() {
-  for (let i = 0; i < 300; i++) {
-    boids.push(new Boid(
-      new Vector2D(canvas.width/2, canvas.height/2)
+  for (let i = 0; i < 100; i++) {
+    boids.push(new Boid(i,
+      new Vector2D(Math.random() * canvas.width, Math.random() * canvas.height)
       )
     );
   }
 }
 
-const pointone = new Vector2D(canvas.width / 2, canvas.height / 2);
-
+let count = 0;
 function display() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let boid of boids) {
+    boid.flock(boids)
     boid.update();
     boid.draw(ctx);
   }
+  if (count < 200) {
+    count++
+  }
   requestAnimationFrame(display);
+  // console.log(count < 100);
 }
 
 init();
 display();
+
+// console.log(dist);
