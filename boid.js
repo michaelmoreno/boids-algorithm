@@ -70,7 +70,6 @@ export class Boid {
       if (other != this && dist < sight) {
         let diff = new Vector2D(this.pos.x,this.pos.y);
         diff.sub(other.pos)
-        console.log(diff);
         diff.div(dist)
         sum.add(diff)
         total++;
