@@ -4,9 +4,8 @@ export class Boid {
     this.pos = pos;
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
-    this.maxForce = 1;
+    this.maxForce = 0.1;
     this.maxSpeed = 4;
-    this.sight = 50;
   }
 
   edges() {
@@ -23,11 +22,12 @@ export class Boid {
   }
 
   align(boids) {
+    let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < this.sight) {
+      if (other != this && dist < sight) {
         sum.add(other.vel)
         total++;
       }
@@ -42,11 +42,12 @@ export class Boid {
   }
 
   cohesion(boids) {
+    let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < this.sight) {
+      if (other != this && dist < sight) {
         sum.add(other.pos)
         total++;
       }
@@ -61,11 +62,12 @@ export class Boid {
     return sum;
   }
   separation(boids) {
+    let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < this.sight) {
+      if (other != this && dist < sight) {
         let diff = new Vector2D(this.pos.x,this.pos.y);
         diff.sub(other.pos)
         console.log(diff);
@@ -128,8 +130,8 @@ export class Boid {
     ctx.closePath();
 
     // ctx.beginPath();
-    // // ctx.rect(this.pos.x-this.sight/2, this.pos.y-this.sight/2, this.sight, this.sight);
-    // ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
+    // // ctx.rect(this.pos.x-sight/2, this.pos.y-sight/2, sight, sight);
+    // ctx.arc(this.pos.x, this.pos.y, sight, 0, Math.PI* 2, false);
     // ctx.closePath();
     // ctx.setLineDash([5,10])
     // ctx.strokeStyle = 'blue';
