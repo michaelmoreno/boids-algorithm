@@ -4,7 +4,7 @@ export class Boid {
     this.pos = pos;
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
-    this.maxForce = 0.1;
+    this.maxForce = 1;
     this.maxSpeed = 4;
     this.sight = 50;
   }
@@ -54,7 +54,29 @@ export class Boid {
     if (total > 0) {
       sum.div(total);
       sum.sub(this.pos)
-      // sum.setMag(this.maxSpeed)
+      sum.setMag(this.maxSpeed)
+      sum.sub(this.vel);
+      sum.limit(this.maxForce)
+    }
+    return sum;
+  }
+  separation(boids) {
+    let sum = new Vector2D(0, 0);
+    let total = 0;
+    for (let other of boids) {
+      let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
+      if (other != this && dist < this.sight) {
+        let diff = new Vector2D(this.pos.x,this.pos.y);
+        diff.sub(other.pos)
+        console.log(diff);
+        diff.div(dist)
+        sum.add(diff)
+        total++;
+      }
+    }
+    if (total > 0) {
+      sum.div(total);
+      sum.setMag(this.maxSpeed)
       sum.sub(this.vel);
       sum.limit(this.maxForce)
     }
@@ -62,16 +84,19 @@ export class Boid {
   }
 
   flock(boids) {
-    // let alignment = this.align(boids)
+    let alignment = this.align(boids)
     let cohesion = this.cohesion(boids)
-    // this.accel = alignment;
-    this.accel = cohesion;
+    let separation = this.separation(boids);
+    this.accel.add(separation);
+    this.accel.add(alignment);
+    this.accel.add(cohesion);
   }
-
+  
   update() {
     this.pos.add(this.vel)
     this.vel.add(this.accel)
     this.vel.limit(this.maxSpeed);
+    this.accel.mul({x: 0, y: 0})
   }
   draw(ctx) {
     const vertices = [
