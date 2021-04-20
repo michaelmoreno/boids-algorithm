@@ -1,7 +1,6 @@
 import { Vector2D, constantVector, drawTri } from './custom.js';
 export class Boid {
-  constructor(i, pos, vel, accel) {
-    this.i = i;
+  constructor(pos, vel, accel) {
     this.pos = pos;
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
@@ -42,14 +41,37 @@ export class Boid {
     return sum;
   }
 
+  cohesion(boids) {
+    let sum = new Vector2D(0, 0);
+    let total = 0;
+    for (let other of boids) {
+      let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
+      if (other != this && dist < this.sight) {
+        sum.add(other.pos)
+        total++;
+      }
+    }
+    if (total > 0) {
+      sum.div(total);
+      sum.sub(this.pos)
+      // sum.setMag(this.maxSpeed)
+      sum.sub(this.vel);
+      sum.limit(this.maxForce)
+    }
+    return sum;
+  }
+
   flock(boids) {
-    let alignment = this.align(boids)
-    this.accel = alignment;
+    // let alignment = this.align(boids)
+    let cohesion = this.cohesion(boids)
+    // this.accel = alignment;
+    this.accel = cohesion;
   }
 
   update() {
     this.pos.add(this.vel)
     this.vel.add(this.accel)
+    this.vel.limit(this.maxSpeed);
   }
   draw(ctx) {
     const vertices = [
@@ -64,7 +86,7 @@ export class Boid {
       //   ctx.moveTo(v[0], v[1]);
       // else
       //   ctx.lineTo(v[0], v[1]);
-      ctx.arc(this.pos.x, this.pos.y, 5, 0, Math.PI * 2);
+      // ctx.arc(this.pos.x, this.pos.y, 5, 0, Math.PI * 2);
     })
     ctx.closePath();
     ctx.fillStyle = '#ccc';

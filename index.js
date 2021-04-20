@@ -20,7 +20,7 @@ const two = new Vector2D(5, 10);
 const boids = [];
 function init() {
   for (let i = 0; i < 100; i++) {
-    boids.push(new Boid(i,
+    boids.push(new Boid(
       new Vector2D(Math.random() * canvas.width, Math.random() * canvas.height)
       )
     );
