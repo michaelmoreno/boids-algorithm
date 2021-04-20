@@ -3,32 +3,48 @@ export class Boid {
   constructor(i, pos, vel, accel) {
     this.i = i;
     this.pos = pos;
-    this.vel = new constantVector(2,2);
-    this.accel = new Vector2D(0,0);
+    this.vel = new constantVector(10);
+    this.accel = new Vector2D(0, 0);
+    this.maxForce = 1;
   }
+
+  edges() {
+    if (this.pos.x > window.innerWidth) {
+      this.pos.x = 0;
+    } else if (this.pos.x < 0) {
+      this.pos.x = window.innerWidth;
+    }
+    if (this.pos.y > window.innerHeight) {
+      this.pos.y = 0;
+    } else if (this.pos.y < 0) {
+      this.pos.y = window.innerHeight;
+    }
+  }
+
   align(boids) {
     let sight = 50;
-    let steer = new Vector2D(0,0);
+    let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
-      let dist = Math.sqrt(((other.pos.x - this.pos.x)**2) + (Math.abs((other.pos.y - this.pos.y)**2)));
+      let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < sight) {
-        steer.add(other.vel)
+        sum.add(other.vel)
         total++;
       }
     }
     if (total > 0) {
-      steer.div(total);
-      steer.sub(this.vel);
+      sum.div(total);
+      sum.sub(this.vel);
+      this.vel.getMag();
     }
-    return steer; 
+    return sum;
   }
 
-  flock(boids){
+  flock(boids) {
     let alignment = this.align(boids)
     this.accel = alignment;
   }
-  
+
   update() {
     this.pos.add(this.vel)
     this.vel.add(this.accel)
@@ -51,5 +67,17 @@ export class Boid {
     ctx.closePath();
     ctx.fillStyle = '#ccc';
     ctx.fill();
+
+    ctx.beginPath();
+    ctx.fill();
+    ctx.moveTo(this.pos.x,this.pos.y);
+    ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
+    ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
+    ctx.lineTo(this.pos.x, this.pos.y);
+    ctx.strokeStyle = 'green';
+    ctx.stroke();
+    ctx.closePath();
+    // const cX = Math.sqrt((this.vel.x - this.pos.x)**2 + (this.vel.y - this.pos.y)**2);
+    // ctx.lineTo()
   }
 }

@@ -1,32 +1,52 @@
+import { ctx, mouseX, mouseY } from './index.js';
+
 export class Vector2D {
   constructor(x, y) {
     this.x = x;
     this.y = y;
+    this.mag = this.getMag();
   }
   add(other) {
     this.x += other.x;
-    this.y += other.y
+    this.y += other.y;
+    this.getMag();
   }
   mul(other) {
     this.x *= other.x;
     this.y *= other.y;
+    this.getMag();
   }
   sub(other) {
     this.x -= other.x;
     this.y -= other.y;
+    this.getMag();
   }
   div(by) {
     this.x /= by;
     this.y /= by;
+    this.getMag();
+  }
+  getMag() {
+    this.mag = Math.sqrt(Math.abs(this.x**2) + Math.abs(this.y**2));
+    return this.mag;
+  }
+  setMag() {
+    this.mag.mul()
+  }
+  limit(max) {
+    if (this.mag > max) {
+      this.mul({x: max / this.mag, y: max / this.mag});
+    }
+    return this;
   }
 }
 
-export function constantVector(mag, range) {
-  let x = Math.random() * range;
+export function constantVector(mag) {
+  let x = Math.random() * mag;
   let y = Math.sqrt((mag * mag) - (x * x));
   y = Math.round(Math.random()) < 1 ? -y:y;
   x = Math.round(Math.random()) < 1 ? -x:x;
-  return new Vector2D(x, y)
+  return new Vector2D(x, y, mag)
 }
 
 export function drawTri(x1, y1, x2, y2) {
@@ -45,4 +65,36 @@ export function drawTri(x1, y1, x2, y2) {
   ctx.closePath();
   ctx.font = '48px serif';
   ctx.fillText(dist, canvas.width / 2, canvas.height / 2)
+}
+
+function drawCircle() {
+  ctx.beginPath();
+  ctx.arc(window.innerWidth / 2, window.innerHeight / 2, 75, 0, Math.PI * 2, false)
+  ctx.strokeStyle = 'green';
+  ctx.closePath();
+  ctx.stroke();
+}
+
+
+function drawLine() {
+  let dx = mouseX - window.innerWidth/2;
+  let dy = mouseY - window.innerHeight/2;
+  
+  // console.log('dx: ' + dx + ' dy: ' + dy);
+  const v0 = new Vector2D(dx, dy);
+  
+  
+  
+  console.log(v0);
+  ctx.beginPath();
+  ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
+  v0.limit(75)
+  ctx.lineTo(window.innerWidth/2 + v0.x, window.innerHeight/2 + v0.y)
+  ctx.closePath();
+  ctx.stroke();
+}
+
+export function limitTest() {
+  drawCircle();
+  drawLine();
 }
