@@ -30,13 +30,12 @@ export class Vector2D {
     this.mag = Math.sqrt(Math.abs(this.x**2) + Math.abs(this.y**2));
     return this.mag;
   }
-  setMag() {
-    this.mag.mul()
+  setMag(to) {
+    this.mul({x: to/this.mag, y: to/this.mag})
   }
   limit(max) {
-    if (this.mag > max) {
-      this.mul({x: max / this.mag, y: max / this.mag});
-    }
+    if (this.mag > max)
+      this.setMag(max)
     return this;
   }
 }
@@ -76,25 +75,26 @@ function drawCircle() {
 }
 
 
-function drawLine() {
-  let dx = mouseX - window.innerWidth/2;
-  let dy = mouseY - window.innerHeight/2;
+// function drawLine() {
+//   let dx = mouseX - window.innerWidth/2;
+//   let dy = mouseY - window.innerHeight/2;
   
-  // console.log('dx: ' + dx + ' dy: ' + dy);
-  const v0 = new Vector2D(dx, dy);
+//   // console.log('dx: ' + dx + ' dy: ' + dy);
+//   const v0 = new Vector2D(dx, dy);
+  
+//   // const v0 = new constantVector(7);
+//   // v0.setMag(100)
   
   
-  
-  console.log(v0);
-  ctx.beginPath();
-  ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
-  v0.limit(75)
-  ctx.lineTo(window.innerWidth/2 + v0.x, window.innerHeight/2 + v0.y)
-  ctx.closePath();
-  ctx.stroke();
-}
+//   ctx.beginPath();
+//   ctx.moveTo(window.innerWidth / 2, window.innerHeight / 2);
+//   v0.limit(75)
+//   ctx.lineTo(window.innerWidth/2 + v0.x, window.innerHeight/2 + v0.y)
+//   ctx.closePath();
+//   ctx.stroke();
+// }
 
-export function limitTest() {
-  drawCircle();
-  drawLine();
-}
+// export function limitTest() {
+//   drawCircle();
+//   drawLine();
+// }
