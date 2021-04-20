@@ -66,13 +66,13 @@ export function drawTri(x1, y1, x2, y2) {
   ctx.fillText(dist, canvas.width / 2, canvas.height / 2)
 }
 
-function drawCircle() {
-  ctx.beginPath();
-  ctx.arc(window.innerWidth / 2, window.innerHeight / 2, 75, 0, Math.PI * 2, false)
-  ctx.strokeStyle = 'green';
-  ctx.closePath();
-  ctx.stroke();
-}
+// function drawCircle() {
+//   ctx.beginPath();
+//   ctx.arc(window.innerWidth / 2, window.innerHeight / 2, 75, 0, Math.PI * 2, false)
+//   ctx.strokeStyle = 'green';
+//   ctx.closePath();
+//   ctx.stroke();
+// }
 
 
 // function drawLine() {
