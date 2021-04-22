@@ -6,10 +6,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flocking Simulation | Michael Moreno</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.3.1/lib/p5.js"></script>
 </head>
 <body>
   <canvas></canvas>
+  <div class="container">
+    <div class="structure">
+      <div class="top">
+        <div class="slider-box">
+          <label for="alignment">Alignment</label>
+          <input type="range" min="0" max="20" value="10" class="slider" id="alignment">
+          <p class="alignment-value"></p>
+        </div>
+        <div class="slider-box">
+          <label for="separation">Separation</label>
+          <input type="range" min="0" max="20" value="10" class="slider" id="separation">
+          <p class="separation-value"></p>
+        </div>
+        <div class="slider-box">
+          <label for="cohesion">Cohesion</label>
+          <input type="range" min="0" max="20" value="10" class="slider" id="cohesion">
+          <p class="cohesion-value"></p>
+        </div>        
+      </div>
+      <div class="bot">
+        <div class="slider-box">
+          <label for="boids">Boids</label>
+          <input type="range" min="1" max="400" value="100" class="slider" id="boids">
+          <p class="boids-value"></p>
+        </div>
+        <div class="slider-box">
+          <label for="sight">Sight</label>
+          <input type="range" min="0" max="1400" value="100" class="slider" id="sight">
+          <p class="vision-value"></p>
+        </div>
+    
+      </div>
+    </div>
+
+  </div>
   <script type="module" src="index.js"></script>
 </body>
 </html>

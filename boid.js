@@ -6,6 +6,7 @@ export class Boid {
     this.accel = new Vector2D(0, 0);
     this.maxForce = 0.1;
     this.maxSpeed = 4;
+    this.sight = 100;
   }
 
   edges() {
@@ -22,12 +23,12 @@ export class Boid {
   }
 
   align(boids) {
-    let sight = 100;
+    // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < sight) {
+      if (other != this && dist < this.sight) {
         sum.add(other.vel)
         total++;
       }
@@ -42,12 +43,12 @@ export class Boid {
   }
 
   cohesion(boids) {
-    let sight = 100;
+    // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < sight) {
+      if (other != this && dist < this.sight) {
         sum.add(other.pos)
         total++;
       }
@@ -62,12 +63,12 @@ export class Boid {
     return sum;
   }
   separation(boids) {
-    let sight = 100;
+    // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let other of boids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < sight) {
+      if (other != this && dist < this.sight) {
         let diff = new Vector2D(this.pos.x,this.pos.y);
         diff.sub(other.pos)
         diff.div(dist)
@@ -88,6 +89,32 @@ export class Boid {
     let alignment = this.align(boids)
     let cohesion = this.cohesion(boids)
     let separation = this.separation(boids);
+
+
+    
+    const alignmentSlider = document.querySelector('#alignment');
+    const separationSlider = document.querySelector('#separation')
+    const cohesionSlider = document.querySelector('#cohesion');
+    const sightSlider = document.querySelector('#sight');
+    alignment.mul({x: alignmentSlider.value * 0.10, y: alignmentSlider.value * 0.10});
+    separation.mul({x: separationSlider.value * 0.10, y: separationSlider.value * 0.10});
+    cohesion.mul({x: cohesionSlider.value * 0.10, y: cohesionSlider.value * 0.10});
+
+    const alignmentValue = document.querySelector('.alignment-value');
+    alignmentValue.innerHTML = `${(alignmentSlider.value * 0.10).toFixed(2)}x`;
+    
+    const cohesionValue = document.querySelector('.cohesion-value');
+    cohesionValue.innerHTML = `${(cohesionSlider.value * 0.10).toFixed(2)}x`;
+
+    document.querySelector('.separation-value').innerHTML = `${(separationSlider.value * 0.10).toFixed(2)}x`;
+    
+    const visionValue = document.querySelector('.vision-value');
+    visionValue.innerHTML = `${(sightSlider.value)}`
+
+    this.sight = sightSlider.value;
+
+    
+    
     this.accel.add(separation);
     this.accel.add(alignment);
     this.accel.add(cohesion);
@@ -130,9 +157,9 @@ export class Boid {
 
     // ctx.beginPath();
     // // ctx.rect(this.pos.x-sight/2, this.pos.y-sight/2, sight, sight);
-    // ctx.arc(this.pos.x, this.pos.y, sight, 0, Math.PI* 2, false);
+    // ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
     // ctx.closePath();
-    // ctx.setLineDash([5,10])
+    // // ctx.setLineDash([5,10])
     // ctx.strokeStyle = 'blue';
     // ctx.stroke();
     // const cX = Math.sqrt((this.vel.x - this.pos.x)**2 + (this.vel.y - this.pos.y)**2);

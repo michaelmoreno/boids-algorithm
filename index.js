@@ -14,17 +14,25 @@ window.addEventListener('resize', size());
 
 
 
-const one = new Vector2D(500, 600);
-const two = new Vector2D(5, 10);
+const boidsSlider = document.querySelector('#boids');
+const boidsValue = document.querySelector('.boids-value');
+boidsValue.innerHTML = `${(boidsSlider.value)}`;
 
-const boids = [];
+let boids = [];
 function init() {
-  for (let i = 0; i < 150; i++) {
+  for (let i = 0; i < boidsSlider.value; i++) {
     boids.push(new Boid(
       new Vector2D(Math.random() * canvas.width, Math.random() * canvas.height)
       )
-    );
+      );
+    }
   }
+  
+  boidsSlider.onchange = function(){
+    boidsValue.innerHTML = `${(boidsSlider.value)}`;
+  console.log(boidsSlider.value);
+  boids = [];
+  init();
 }
 
   
