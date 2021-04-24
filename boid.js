@@ -1,6 +1,6 @@
-import { Vector2D, constantVector, drawTri } from './custom.js';
+import { Vector2D, constantVector } from './vector.js';
 export class Boid {
-  constructor(pos, vel, accel) {
+  constructor(pos) {
     this.pos = pos;
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
@@ -86,35 +86,33 @@ export class Boid {
   }
 
   flock(boids) {
+
     let alignment = this.align(boids)
     let cohesion = this.cohesion(boids)
     let separation = this.separation(boids);
 
+    Object.entries({alignment: alignment, cohesion: cohesion, separation: separation }).forEach(([key, value]) => {
+      const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
+      value.mul(htmlSlider);
+      document.querySelector(`#${key}-value`).innerHTML = `${htmlSlider}x`;
+    });
 
-    
     const alignmentSlider = document.querySelector('#alignment');
     const separationSlider = document.querySelector('#separation')
     const cohesionSlider = document.querySelector('#cohesion');
-    const sightSlider = document.querySelector('#sight');
-    alignment.mul({x: alignmentSlider.value * 0.10, y: alignmentSlider.value * 0.10});
-    separation.mul({x: separationSlider.value * 0.10, y: separationSlider.value * 0.10});
-    cohesion.mul({x: cohesionSlider.value * 0.10, y: cohesionSlider.value * 0.10});
+    // alignment.mul(alignmentSlider.value * 0.10);
+    // separation.mul(separationSlider.value * 0.10);
+    // cohesion.mul(cohesionSlider.value * 0.10);
 
-    const alignmentValue = document.querySelector('.alignment-value');
-    alignmentValue.innerHTML = `${(alignmentSlider.value * 0.10).toFixed(2)}x`;
     
-    const cohesionValue = document.querySelector('.cohesion-value');
-    cohesionValue.innerHTML = `${(cohesionSlider.value * 0.10).toFixed(2)}x`;
 
-    document.querySelector('.separation-value').innerHTML = `${(separationSlider.value * 0.10).toFixed(2)}x`;
+
+    const sightSlider = document.querySelector('#sight')
+    const sightValue = document.querySelector('#sight-value');
+    sightValue.innerHTML = `${(sightSlider.value)}`
+
     
-    const visionValue = document.querySelector('.vision-value');
-    visionValue.innerHTML = `${(sightSlider.value)}`
-
     this.sight = sightSlider.value;
-
-    
-    
     this.accel.add(separation);
     this.accel.add(alignment);
     this.accel.add(cohesion);
@@ -126,27 +124,8 @@ export class Boid {
     this.vel.limit(this.maxSpeed);
     this.accel.mul({x: 0, y: 0})
   }
-  draw(ctx) {
-    const vertices = [
-      [this.pos.x - 8, this.pos.y + 8],
-      [this.pos.x, this.pos.y - 8],
-      [this.pos.x + 8, this.pos.y + 8],
-    ];
-
+  draw(ctx, sightVisible) {
     ctx.beginPath();
-    vertices.forEach(v => {
-      // if (v == vertices[0])
-      //   ctx.moveTo(v[0], v[1]);
-      // else
-      //   ctx.lineTo(v[0], v[1]);
-      // ctx.arc(this.pos.x, this.pos.y, 5, 0, Math.PI * 2);
-    })
-    ctx.closePath();
-    ctx.fillStyle = '#ccc';
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.fill();
     ctx.moveTo(this.pos.x,this.pos.y);
     ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
     ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
@@ -155,14 +134,15 @@ export class Boid {
     ctx.stroke();
     ctx.closePath();
 
-    // ctx.beginPath();
-    // // ctx.rect(this.pos.x-sight/2, this.pos.y-sight/2, sight, sight);
-    // ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
-    // ctx.closePath();
-    // // ctx.setLineDash([5,10])
-    // ctx.strokeStyle = 'blue';
-    // ctx.stroke();
-    // const cX = Math.sqrt((this.vel.x - this.pos.x)**2 + (this.vel.y - this.pos.y)**2);
-    // ctx.lineTo()
+    if (sightVisible) {
+      ctx.beginPath();
+      ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
+      ctx.closePath();
+      // ctx.setLineDash([5,10])
+      ctx.strokeStyle = 'blue';
+      ctx.stroke();
+    }
+  }
+  drawSight(ctx) {
   }
 }

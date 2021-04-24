@@ -1,4 +1,4 @@
-import { ctx, mouseX, mouseY } from './index.js';
+import { ctx, mouseX, mouseY } from './script.js';
 
 export class Vector2D {
   constructor(x, y) {
@@ -7,13 +7,23 @@ export class Vector2D {
     this.mag = this.getMag();
   }
   add(other) {
-    this.x += other.x;
-    this.y += other.y;
+    if (typeof other === 'object') {
+      this.x += other.x;
+      this.y += other.y;
+    } else {
+      this.x += other;
+      this.y += other;
+    }
     this.getMag();
   }
   mul(other) {
-    this.x *= other.x;
-    this.y *= other.y;
+    if (typeof other === 'object') {
+      this.x *= other.x;
+      this.y *= other.y;
+    } else {
+      this.x *= other; 
+      this.y *= other;
+    }
     this.getMag();
   }
   sub(other) {

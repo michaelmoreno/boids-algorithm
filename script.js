@@ -1,4 +1,4 @@
-import { Vector2D, constantVector } from './custom.js';
+import { Vector2D, constantVector } from './vector.js';
 import { Boid } from './boid.js';
 
 const canvas = document.querySelector('canvas');
@@ -15,52 +15,57 @@ window.addEventListener('resize', size());
 
 
 const boidsSlider = document.querySelector('#boids');
-const boidsValue = document.querySelector('.boids-value');
+const boidsValue = document.querySelector('#boids-value');
 boidsValue.innerHTML = `${(boidsSlider.value)}`;
 
 let boids = [];
 function init() {
   for (let i = 0; i < boidsSlider.value; i++) {
-    boids.push(new Boid(
-      new Vector2D(Math.random() * canvas.width, Math.random() * canvas.height)
-      )
-      );
-    }
+    boids.push(new Boid(new Vector2D(Math.random() * canvas.width, Math.random() * canvas.height)));
   }
-  
-  boidsSlider.onchange = function(){
-    boidsValue.innerHTML = `${(boidsSlider.value)}`;
-  console.log(boidsSlider.value);
+}
+
+
+boidsSlider.addEventListener('input', function(){
+  boidsValue.innerHTML = `${(boidsSlider.value)}`;
   boids = [];
   init();
-}
+  console.log('test');
+});
+
+let sightVisible = false;
+const sightSlider = document.querySelector(`#sight`)
+sightSlider.addEventListener('mousedown', function() {
+  sightVisible = true;
+})
+sightSlider.addEventListener('mouseup', function () {
+  sightVisible = false;
+})
 
   
 let mouseX, mouseY;
 window.addEventListener('mousemove', function(event){
   [mouseX, mouseY] = [event.x, event.y]
 })
-  
+
+
 let count = 0;
-function display() {
+function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let boid of boids) {
     boid.edges();
     boid.flock(boids)
     boid.update();
-    boid.draw(ctx);
+    boid.draw(ctx, sightVisible);
   }
-  if (count < 50) {
-    count++
+  if (count < 5){
+    count++;
   }
-  requestAnimationFrame(display);
+  requestAnimationFrame(render);
 }
 
 init();
-display();
-
-// console.log(dist);
-
+render();
 
 export {
   ctx,
