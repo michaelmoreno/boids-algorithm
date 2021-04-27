@@ -26,6 +26,9 @@ class Rectangle {
     this.anchor = anchor;
   }
   contains(point) {
+    if (this.anchor){
+      // console.log(point);
+    }
     if (point === this.anchor) {
       return false;
     }
@@ -37,11 +40,11 @@ class Rectangle {
   }
 
   intersects(range) {
-    ctx.beginPath();
-    ctx.fillStyle = 'white';
-    ctx.fillText(range.x.toFixed(3), range.x-10, range.y-10)
-    ctx.font = '25px arial';
-    ctx.closePath();
+    // ctx.beginPath();
+    // ctx.fillStyle = 'white';
+    // ctx.fillText(range.x.toFixed(3), range.x-10, range.y-10)
+    // ctx.font = '25px arial';
+    // ctx.closePath();
     
     const noIntersec = (
       range.x + range.w < this.x ||
@@ -169,25 +172,23 @@ class Quadtree {
     
     if (!this.boundary.intersects(range)) {
       // console.log(`no intersection`);
-      range.draw('blue')
       return;
     } else {
       this.boundary.draw('red')
-      range.draw('green');
       for (let p of this.points) {
-        count++;
         if (range.contains(p)) {
-          ctx.beginPath();
-          ctx.arc(range.anchor.pos.x, range.anchor.pos.y, 10, 0, Math.PI * 2, false);
-          ctx.moveTo(range.anchor.pos.x, range.anchor.pos.y);
-          ctx.lineTo(p.pos.x, p.pos.y)
-          ctx.closePath();
-          ctx.strokeStyle = 'blue';
-          ctx.stroke();
+          // ctx.beginPath();
+          // ctx.arc(range.anchor.pos.x, range.anchor.pos.y, 10, 0, Math.PI * 2, false);
+          // ctx.moveTo(range.anchor.pos.x, range.anchor.pos.y);
+          // ctx.lineTo(p.pos.x, p.pos.y)
+          // ctx.closePath();
+          // ctx.strokeStyle = 'blue';
+          // ctx.stroke();
 
           range.draw('blue')
 
           // console.log('contains');
+          range.anchor.nearbyBoids.push(p);
           found.push(p);
           p.draw(ctx, false, 'blue');
         }

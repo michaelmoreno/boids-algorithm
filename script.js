@@ -24,6 +24,9 @@ function init() {
   for (let i = 0; i < boidsSlider.value; i++) {
     boids.push(new Boid(new Vector2D(Math.random() * canvas.width, Math.random() * canvas.height)));
   }
+  // boids.push(new Boid(new Vector2D(500, 600)));
+  // boids.push(new Boid(new Vector2D(550, 650)));
+  // boids.push(new Boid(new Vector2D(530, 630)));
 }
 
 
@@ -53,31 +56,40 @@ window.addEventListener('mousemove', function(event){
 let count = 0;
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  
   let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
-  qtree = new Quadtree(boundary, 1);
-
+  qtree = new Quadtree(boundary, 4);
+  
   let found;
   for (let boid of boids) {
+    boid.draw(ctx, sightVisible);
     qtree.insert(boid)
     let range = new Rectangle(boid.pos.x - 100, boid.pos.y - 100, 200, 200, boid);
     // console.log(range);
     range.draw();
-    found = qtree.query(range);
-    if (count < 1){
-      count++;
-      console.log(qtree);
-      console.log(found);
-      console.log();
-    }
-
+    // found = qtree.query(range);
+    
     
     boid.edges();
     boid.flock(boids)
     boid.update();
-    boid.draw(ctx, sightVisible);
-    qtree.render();
+    // qtree.render();
   }
+  
+  for (let boid of boids) {
+    let range = new Rectangle(boid.pos.x - 100, boid.pos.y - 100, 200, 200, boid);
+    qtree.query(range);
+    // if (count < 1){
+    //   count++;
+    //   console.log(boid);
+    //   console.log(boid.nearbyBoids);
+    //   // console.log(found);
+    //   // console.log(qtree);
+    //   // console.log(found);
+    //   // console.log();
+    // }
+  }
+  
   // ctx.fillText(found.length, qtree.boundary.x, qtree.boundary.y);
   // ctx.font = '25px arial';
   requestAnimationFrame(render);

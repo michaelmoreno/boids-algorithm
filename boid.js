@@ -5,8 +5,9 @@ export class Boid {
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
     this.maxForce = 0.1;
-    this.maxSpeed = 1;
+    this.maxSpeed = 3;
     this.sight = 100;
+    this.nearbyBoids = [];
   }
 
   edges() {
@@ -26,7 +27,8 @@ export class Boid {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
-    for (let other of boids) {
+    // console.log(boids[0].pos);
+    for (let other of this.nearbyBoids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < this.sight) {
         sum.add(other.vel)
@@ -46,7 +48,7 @@ export class Boid {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
-    for (let other of boids) {
+    for (let other of this.nearbyBoids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < this.sight) {
         sum.add(other.pos)
@@ -66,7 +68,7 @@ export class Boid {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
-    for (let other of boids) {
+    for (let other of this.nearbyBoids) {
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < this.sight) {
         let diff = new Vector2D(this.pos.x,this.pos.y);
