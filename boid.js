@@ -5,7 +5,7 @@ export class Boid {
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
     this.maxForce = 0.1;
-    this.maxSpeed = 4;
+    this.maxSpeed = 1;
     this.sight = 100;
   }
 
@@ -124,13 +124,13 @@ export class Boid {
     this.vel.limit(this.maxSpeed);
     this.accel.mul({x: 0, y: 0})
   }
-  draw(ctx, sightVisible) {
+  draw(ctx, sightVisible, color) {
     ctx.beginPath();
     ctx.moveTo(this.pos.x,this.pos.y);
     ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
     ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
     ctx.lineTo(this.pos.x, this.pos.y);
-    ctx.strokeStyle = 'green';
+    ctx.strokeStyle = color || 'green';
     ctx.stroke();
     ctx.closePath();
 

@@ -1,6 +1,6 @@
 import { Vector2D, constantVector } from './vector.js';
 import { Boid } from './boid.js';
-import { Point, Rectangle, Circle, Quadtree } from './quadtree.js';
+import { Point, Rectangle, Quadtree } from './quadtree.js';
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -54,22 +54,23 @@ let count = 0;
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  let boundary = new Rectangle(150, 150, canvas.width - 300, canvas.height - 300);
-  qtree = new Quadtree(boundary, 4);
+  let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
+  qtree = new Quadtree(boundary, 1);
 
   let found;
   for (let boid of boids) {
-    let p = new Point(boid.pos.x, boid.pos.y, boid);
-    qtree.insert(p);
-
-    let range = new Circle(boid.pos.x, boid.pos.y, 2)
+    qtree.insert(boid)
+    let range = new Rectangle(boid.pos.x - 100, boid.pos.y - 100, 200, 200, boid);
+    // console.log(range);
     range.draw();
     found = qtree.query(range);
+    if (count < 1){
+      count++;
+      console.log(qtree);
+      console.log(found);
+      console.log();
+    }
 
-    
-    // for (let point of found) {
-    //   let other = point.userData;
-    // }
     
     boid.edges();
     boid.flock(boids)
@@ -79,9 +80,6 @@ function render() {
   }
   // ctx.fillText(found.length, qtree.boundary.x, qtree.boundary.y);
   // ctx.font = '25px arial';
-  if (count < 5){
-    count++;
-  }
   requestAnimationFrame(render);
 }
 

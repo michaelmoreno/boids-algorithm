@@ -18,20 +18,41 @@ class Point {
 }
 
 class Rectangle {
-  constructor(x,y,w,h) {
+  constructor(x,y,w,h, anchor) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    this.anchor = anchor;
   }
   contains(point) {
+    if (point === this.anchor) {
+      return false;
+    }
+    
     return (
-      (point.x >= this.x && point.x <= this.x+this.w) && 
-      (point.y >= this.y && point.y <= this.y + this.h)
+      (point.pos.x >= this.x && point.pos.x <= this.x+this.w) && 
+      (point.pos.y >= this.y && point.pos.y <= this.y + this.h)
     )
   }
 
   intersects(range) {
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.fillText(range.x.toFixed(3), range.x-10, range.y-10)
+    ctx.font = '25px arial';
+    ctx.closePath();
+    
+    const noIntersec = (
+      range.x + range.w < this.x ||
+      range.x > this.x + this.w ||
+      range.y + range.h < this.y ||
+      range.y > this.y + this.h
+    )
+    if (!noIntersec) {
+      // console.log('intersection');
+    }
+
     return !(
       range.x+range.w < this.x ||
       range.x > this.x+this.w ||
@@ -40,55 +61,55 @@ class Rectangle {
     );
   }
   
-  draw(color = 'green') {
+  draw(color) {
     ctx.beginPath();
     ctx.moveTo(this.x, this.y);
     ctx.lineTo(this.x + this.w, this.y)
     ctx.lineTo(this.x + this.w, this.y + this.h);
     ctx.lineTo(this.x, this.y + this.h);
     ctx.lineTo(this.x, this.y);
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = color || 'green';
     ctx.stroke();
     ctx.closePath();
   }
 }
 
-class Circle {
-  constructor(x, y, r) {
-    this.x = x;
-    this.y = y;
-    this.r = r;
-    this.rSqrd = this.r;
-  }
+// class Circle {
+//   constructor(x, y, r) {
+//     this.x = x;
+//     this.y = y;
+//     this.r = r;
+//     this.rSqrd = this.r;
+//   }
 
-  contains(point) {
-    let d = Math.sqrt((point.x - this.x)**2 + (point.y - this.y)**2);
-    return d <= this.rSqrd;
-  }
+//   contains(point) {
+//     let d = Math.sqrt((point.x - this.x)**2 + (point.y - this.y)**2);
+//     return d <= this.rSqrd;
+//   }
 
-  intersects(range) {
-    var xDist = Math.abs(range.x - this.x);
-    var yDist = Math.abs(range.y - this.y);
+//   intersects(range) {
+//     var xDist = Math.abs(range.x - this.x);
+//     var yDist = Math.abs(range.y - this.y);
 
-    var r = this.r;
+//     var r = this.r;
 
-    var edges = Math.pow(xDist - range.w, 2) + Math.pow(yDist - range.h, 2)
+//     var edges = Math.pow(xDist - range.w, 2) + Math.pow(yDist - range.h, 2);
 
-    if (xDist > r + range.w || yDist > r + range.h)
-      return false;
-    if (xDist <= range.w || yDist <= range.h) 
-      return true;
-    return edges <= this.rSqrd;
-  }
+//     if (xDist > r + range.w || yDist > r + range.h)
+//       return false;
+//     if (xDist <= range.w || yDist <= range.h) 
+//       return true;
+//     return edges <= this.rSqrd;
+//   }
 
-  draw() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.rSqrd, 0, Math.PI * 2, false);
-    ctx.closePath();
-    ctx.strokeStyle = 'blue';
-    ctx.stroke();
-  }
-}
+//   draw() {
+//     ctx.beginPath();
+//     ctx.arc(this.x, this.y, this.rSqrd, 0, Math.PI * 2, false);
+//     ctx.closePath();
+//     ctx.strokeStyle = 'blue';
+//     ctx.stroke();
+//   }
+// }
 
 class Quadtree {
   constructor(boundary, n) {
@@ -102,19 +123,14 @@ class Quadtree {
     const { x, y, w, h } = this.boundary,
       halfWidth = w/2,
       halfHeight = h/2;
-      
     let neBoundary = new Rectangle(x + halfWidth, y, halfWidth, halfHeight);
     this.northeast = new Quadtree(neBoundary, this.capacity)
-    
     let seBoundary = new Rectangle(x + halfWidth, y + halfHeight, halfWidth, halfHeight);
     this.southeast = new Quadtree(seBoundary, this.capacity);
-
     let swBoundary = new Rectangle(x, y + halfHeight, halfWidth, halfHeight)
     this.southwest = new Quadtree(swBoundary, this.capacity)
-    
     let nwBoundary = new Rectangle(x, y, halfWidth, halfHeight)
     this.northwest = new Quadtree(nwBoundary, this.capacity)
-
     this.divided = true;
   }
   
@@ -145,23 +161,38 @@ class Quadtree {
       }
     }
   }
-
+  
   query(range, found) {
     if (!found) {
       found = [];
     }
     
     if (!this.boundary.intersects(range)) {
+      // console.log(`no intersection`);
+      range.draw('blue')
       return;
     } else {
       this.boundary.draw('red')
+      range.draw('green');
       for (let p of this.points) {
         count++;
         if (range.contains(p)) {
+          ctx.beginPath();
+          ctx.arc(range.anchor.pos.x, range.anchor.pos.y, 10, 0, Math.PI * 2, false);
+          ctx.moveTo(range.anchor.pos.x, range.anchor.pos.y);
+          ctx.lineTo(p.pos.x, p.pos.y)
+          ctx.closePath();
+          ctx.strokeStyle = 'blue';
+          ctx.stroke();
+
+          range.draw('blue')
+
+          // console.log('contains');
           found.push(p);
-          p.draw('green');
+          p.draw(ctx, false, 'blue');
         }
       }
+      // console.log(this.divided);
       if (this.divided) {
         this.northeast.query(range, found);
         this.southeast.query(range, found);
@@ -173,9 +204,22 @@ class Quadtree {
   }
   
   render() {
-    this.boundary.draw('green');
-    this.points.forEach(p => p.draw());
-
+    // this.boundary.draw('green');
+    // this.points.forEach(p => p.draw());
+    this.points.forEach(p => {
+      
+          // ctx.beginPath();
+          // ctx.moveTo(this.boundary.x + this.boundary.w/2, this.boundary.y + this.boundary.y/2);
+          // ctx.lineTo(p.pos.x, p.pos.y)
+          // ctx.closePath();
+          // ctx.strokeStyle = 'blue';
+          // ctx.fillStyle = 'blue';
+          // ctx.fill();
+          // ctx.stroke();
+          // this.boundary.draw('blue');
+      // ctx.lineTo(p.pos.x, p.pos.y)
+    });
+    
     if (this.divided) {
       this.northeast.render();
       this.southeast.render();
@@ -189,7 +233,6 @@ class Quadtree {
 export {
   Point,
   Rectangle,
-  Circle,
   Quadtree,
   count
 }
