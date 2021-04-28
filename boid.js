@@ -1,6 +1,6 @@
 import { Vector2D, constantVector } from './vector.js';
 export class Boid {
-  constructor(pos) {
+  constructor(pos, range) {
     this.pos = pos;
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
@@ -8,6 +8,7 @@ export class Boid {
     this.maxSpeed = 3;
     this.sight = 100;
     this.nearbyBoids = [];
+    this.range = range;
   }
 
   edges() {

@@ -24,11 +24,10 @@ class Rectangle {
     this.w = w;
     this.h = h;
     this.anchor = anchor;
+
+    this.northeast
   }
   contains(point) {
-    if (this.anchor){
-      // console.log(point);
-    }
     if (point === this.anchor) {
       return false;
     }
@@ -120,6 +119,11 @@ class Quadtree {
     this.capacity = n;
     this.points = [];
     this.divided = false;
+
+    this.northeast;
+    this.southeast;
+    this.southwest;
+    this.northwest;
   }
   
   subdivide() {
