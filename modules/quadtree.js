@@ -1,117 +1,5 @@
-import { ctx } from './script.js'
-
-let count = 0;
-
-class Point {
-  constructor(x,y, userData) {
-    this.x = x;
-    this.y = y;
-    this.userData = userData;
-  }
-  draw(color = 'white') { // fix this auto assignment
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 5, 0, Math.PI * 2, false);
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.closePath();
-  }
-}
-
-class Rectangle {
-  constructor(x,y,w,h, anchor) {
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.anchor = anchor;
-
-    this.northeast;
-  }
-  contains(point) {
-    if (point === this.anchor) {
-      return false;
-    }
-    
-    return (
-      (point.pos.x >= this.x && point.pos.x <= this.x+this.w) && 
-      (point.pos.y >= this.y && point.pos.y <= this.y + this.h)
-    )
-  }
-
-  intersects(range) {
-    // ctx.beginPath();
-    // ctx.fillStyle = 'white';
-    // ctx.fillText(range.x.toFixed(3), range.x-10, range.y-10)
-    // ctx.font = '25px arial';
-    // ctx.closePath();
-    
-    const noIntersec = (
-      range.x + range.w < this.x ||
-      range.x > this.x + this.w ||
-      range.y + range.h < this.y ||
-      range.y > this.y + this.h
-    )
-    if (!noIntersec) {
-      // console.log('intersection');
-    }
-
-    return !(
-      range.x+range.w < this.x ||
-      range.x > this.x+this.w ||
-      range.y+range.h < this.y ||
-      range.y > this.y+this.h
-    );
-  }
-  
-  draw(color) {
-    ctx.beginPath();
-    ctx.moveTo(this.x, this.y);
-    ctx.lineTo(this.x + this.w, this.y)
-    ctx.lineTo(this.x + this.w, this.y + this.h);
-    ctx.lineTo(this.x, this.y + this.h);
-    ctx.lineTo(this.x, this.y);
-    ctx.strokeStyle = color || 'green';
-    ctx.stroke();
-    ctx.closePath();
-  }
-}
-
-// class Circle {
-//   constructor(x, y, r) {
-//     this.x = x;
-//     this.y = y;
-//     this.r = r;
-//     this.rSqrd = this.r;
-//   }
-
-//   contains(point) {
-//     let d = Math.sqrt((point.x - this.x)**2 + (point.y - this.y)**2);
-//     return d <= this.rSqrd;
-//   }
-
-//   intersects(range) {
-//     var xDist = Math.abs(range.x - this.x);
-//     var yDist = Math.abs(range.y - this.y);
-
-//     var r = this.r;
-
-//     var edges = Math.pow(xDist - range.w, 2) + Math.pow(yDist - range.h, 2);
-
-//     if (xDist > r + range.w || yDist > r + range.h)
-//       return false;
-//     if (xDist <= range.w || yDist <= range.h) 
-//       return true;
-//     return edges <= this.rSqrd;
-//   }
-
-//   draw() {
-//     ctx.beginPath();
-//     ctx.arc(this.x, this.y, this.rSqrd, 0, Math.PI * 2, false);
-//     ctx.closePath();
-//     ctx.strokeStyle = 'blue';
-//     ctx.stroke();
-//   }
-// }
+import { Rectangle } from './geometry.js';
+import { quadtreeVisible } from './sliders.js';
 
 class Quadtree {
   constructor(boundary, n) {
@@ -119,11 +7,6 @@ class Quadtree {
     this.capacity = n;
     this.points = [];
     this.divided = false;
-
-    this.northeast;
-    this.southeast;
-    this.southwest;
-    this.northwest;
   }
   
   subdivide() {
@@ -175,10 +58,11 @@ class Quadtree {
     }
     
     if (!this.boundary.intersects(range)) {
-      // console.log(`no intersection`);
-      return;
+      return false;
     } else {
-      // this.boundary.draw('red')
+      if (quadtreeVisible){
+        this.boundary.draw('green')
+      }
       for (let p of this.points) {
         if (range.contains(p)) {
           // ctx.beginPath();
@@ -189,15 +73,10 @@ class Quadtree {
           // ctx.strokeStyle = 'blue';
           // ctx.stroke();
 
-          // range.draw('blue')
-
-          // console.log('contains');
-          // console.log(p.id);
-          // console.log(p.id);
+          
           range.anchor.nearbyBoids[`${p.id}`] = p;
-          // console.log(range.anchor.nearbyBoids);
-          // console.log(range.anchor.nearbyBoids[p]);
           found.push(p);
+          // range.draw('blue')
           // p.draw(ctx, false, 'blue');
         }
       }
@@ -240,8 +119,6 @@ class Quadtree {
 
 
 export {
-  Point,
   Rectangle,
   Quadtree,
-  count
 }

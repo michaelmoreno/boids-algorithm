@@ -1,4 +1,4 @@
-import { ctx, mouseX, mouseY } from './script.js';
+import { ctx, mouseX, mouseY } from '../script.js';
 
 export class Vector2D {
   constructor(x, y) {

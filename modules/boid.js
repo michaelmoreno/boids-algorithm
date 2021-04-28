@@ -1,4 +1,6 @@
 import { Vector2D, constantVector } from './vector.js';
+import { sightVisible, } from './sliders.js';
+
 export class Boid {
   constructor(id, pos, range) {
     this.id = id;
@@ -16,7 +18,7 @@ export class Boid {
     for (let key in this.nearbyBoids){
       const nearby = this.nearbyBoids[key];
       if (!this.range.contains(nearby)) {
-        delete nearby;
+        delete this.nearbyBoids[key]
       }
     }
   }
@@ -34,8 +36,7 @@ export class Boid {
     }
   }
 
-  align(boids) {
-    // let sight = 100;
+  align() {
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let key in this.nearbyBoids) {
@@ -55,8 +56,7 @@ export class Boid {
     return sum;
   }
 
-  cohesion(boids) {
-    // let sight = 100;
+  cohesion() {
     let sum = new Vector2D(0, 0);
     let total = 0;
     for (let key in this.nearbyBoids) {
@@ -76,7 +76,7 @@ export class Boid {
     }
     return sum;
   }
-  separation(boids) {
+  separation() {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
@@ -109,7 +109,7 @@ export class Boid {
     Object.entries({alignment: alignment, cohesion: cohesion, separation: separation }).forEach(([key, value]) => {
       const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
       value.mul(htmlSlider);
-      document.querySelector(`#${key}-value`).innerHTML = `${htmlSlider}x`;
+      // document.querySelector(`#${key}-value`).innerHTML = `${htmlSlider}x`;
     });
 
     const alignmentSlider = document.querySelector('#alignment');
@@ -124,7 +124,7 @@ export class Boid {
 
     const sightSlider = document.querySelector('#sight')
     const sightValue = document.querySelector('#sight-value');
-    sightValue.innerHTML = `${(sightSlider.value)}`
+    // sightValue.innerHTML = `${(sightSlider.value)}`
 
     
     this.sight = sightSlider.value;
@@ -139,7 +139,8 @@ export class Boid {
     this.vel.limit(this.maxSpeed);
     this.accel.mul({x: 0, y: 0})
   }
-  draw(ctx, sightVisible, color) {
+  
+  draw(ctx, color) {
     ctx.beginPath();
     ctx.moveTo(this.pos.x,this.pos.y);
     ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
