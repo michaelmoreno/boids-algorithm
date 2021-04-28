@@ -1,14 +1,24 @@
 import { Vector2D, constantVector } from './vector.js';
 export class Boid {
-  constructor(pos, range) {
+  constructor(id, pos, range) {
+    this.id = id;
     this.pos = pos;
     this.vel = new constantVector(10);
     this.accel = new Vector2D(0, 0);
     this.maxForce = 0.1;
     this.maxSpeed = 3;
     this.sight = 100;
-    this.nearbyBoids = [];
+    this.nearbyBoids = {};
     this.range = range;
+  }
+
+  pruneNearby() {
+    for (let key in this.nearbyBoids){
+      const nearby = this.nearbyBoids[key];
+      if (!this.range.contains(nearby)) {
+        delete nearby;
+      }
+    }
   }
 
   edges() {
@@ -28,8 +38,8 @@ export class Boid {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
-    // console.log(boids[0].pos);
-    for (let other of this.nearbyBoids) {
+    for (let key in this.nearbyBoids) {
+      let other = this.nearbyBoids[key];
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < this.sight) {
         sum.add(other.vel)
@@ -49,7 +59,8 @@ export class Boid {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
-    for (let other of this.nearbyBoids) {
+    for (let key in this.nearbyBoids) {
+      let other = this.nearbyBoids[key];
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < this.sight) {
         sum.add(other.pos)
@@ -69,7 +80,8 @@ export class Boid {
     // let sight = 100;
     let sum = new Vector2D(0, 0);
     let total = 0;
-    for (let other of this.nearbyBoids) {
+    for (let key in this.nearbyBoids) {
+      let other = this.nearbyBoids[key];
       let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
       if (other != this && dist < this.sight) {
         let diff = new Vector2D(this.pos.x,this.pos.y);

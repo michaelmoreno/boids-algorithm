@@ -25,7 +25,7 @@ class Rectangle {
     this.h = h;
     this.anchor = anchor;
 
-    this.northeast
+    this.northeast;
   }
   contains(point) {
     if (point === this.anchor) {
@@ -178,7 +178,7 @@ class Quadtree {
       // console.log(`no intersection`);
       return;
     } else {
-      this.boundary.draw('red')
+      // this.boundary.draw('red')
       for (let p of this.points) {
         if (range.contains(p)) {
           // ctx.beginPath();
@@ -189,12 +189,16 @@ class Quadtree {
           // ctx.strokeStyle = 'blue';
           // ctx.stroke();
 
-          range.draw('blue')
+          // range.draw('blue')
 
           // console.log('contains');
-          range.anchor.nearbyBoids.push(p);
+          // console.log(p.id);
+          // console.log(p.id);
+          range.anchor.nearbyBoids[`${p.id}`] = p;
+          // console.log(range.anchor.nearbyBoids);
+          // console.log(range.anchor.nearbyBoids[p]);
           found.push(p);
-          p.draw(ctx, false, 'blue');
+          // p.draw(ctx, false, 'blue');
         }
       }
       // console.log(this.divided);
