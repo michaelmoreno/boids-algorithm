@@ -1,4 +1,4 @@
-import { ctx, mouseX, mouseY } from '../script.js';
+import { ctx } from '../script.js';
 
 export class Vector2D {
   constructor(x, y) {
@@ -15,6 +15,7 @@ export class Vector2D {
       this.y += other;
     }
     this.getMag();
+    return this;
   }
   mul(other) {
     if (typeof other === 'object') {
@@ -25,16 +26,36 @@ export class Vector2D {
       this.y *= other;
     }
     this.getMag();
+    return this;
   }
   sub(other) {
-    this.x -= other.x;
-    this.y -= other.y;
+    if (typeof other === 'object') {
+      this.x -= other.x;
+      this.y -= other.y;
+    } else {
+      this.x -= other;
+      this.y -= other;
+    }
     this.getMag();
+    return this;
   }
   div(by) {
-    this.x /= by;
-    this.y /= by;
+    if (typeof other === 'object') {
+      this.x /= by.x;
+      this.y /= by.y;
+    } else {
+      this.x /= by;
+      this.y /= by;
+    }
     this.getMag();
+    return this;
+  }
+  eqTo(compare) {
+    if (typeof compare === 'object') {
+      return this.x == compare.x && this.y == compare.y;
+    } else {
+      return this.x == compare & this.y == compare;
+    }
   }
   getMag() {
     this.mag = Math.sqrt(Math.abs(this.x**2) + Math.abs(this.y**2));

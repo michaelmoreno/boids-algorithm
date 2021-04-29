@@ -33,15 +33,6 @@ sightSlider.addEventListener('mouseup', function () {
 })
 
 
-let mouseX, mouseY;
-window.addEventListener('mousemove', function(event){
-  [mouseX, mouseY] = [event.x, event.y]
-})
-
-console.log(sliders);
-
-setTimeout(() => console.log(sliders.quadtreeSlider), 5000)
-
 let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
 let qtree;
 function render() {
@@ -76,6 +67,5 @@ render();
 
 export {
   ctx,
-  mouseX, mouseY,
   init,
 }

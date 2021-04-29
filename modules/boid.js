@@ -1,6 +1,8 @@
 import { Vector2D, constantVector } from './vector.js';
 import { sightVisible, } from './sliders.js';
 
+let count = 0;
+let counttwo = 0;
 export class Boid {
   constructor(id, pos, range) {
     this.id = id;
@@ -36,129 +38,84 @@ export class Boid {
     }
   }
 
-  align() {
-    let sum = new Vector2D(0, 0);
+  steer(rule) {
+    let desired = new Vector2D(0, 0);
     let total = 0;
     for (let key in this.nearbyBoids) {
-      let other = this.nearbyBoids[key];
-      let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < this.sight) {
-        sum.add(other.vel)
+      let near = this.nearbyBoids[key];
+      let dist = Math.sqrt(((near.pos.x - this.pos.x) ** 2) + (Math.abs((near.pos.y - this.pos.y) ** 2)));
+      if (near != this && dist < this.sight) {
+        if (rule === 'alignment')
+          desired.add(near.vel);
+        else if (rule === 'cohesion')
+          desired.add(near.pos)
+        else if (rule === 'separation') {
+          let diff = new Vector2D(this.pos.x, this.pos.y);
+          diff.sub(near.pos);
+          diff.div(dist);
+          desired.add(diff)
+        }
         total++;
       }
     }
     if (total > 0) {
-      sum.div(total);
-      sum.setMag(this.maxSpeed)
-      sum.sub(this.vel);
-      sum.limit(this.maxForce)
+      desired.div(total);
+      if (rule === 'cohesion')
+        desired.sub(this.pos)
+      desired.setMag(this.maxSpeed);
+      desired.sub(this.vel)
+      desired.limit(this.maxForce);
     }
-    return sum;
-  }
-
-  cohesion() {
-    let sum = new Vector2D(0, 0);
-    let total = 0;
-    for (let key in this.nearbyBoids) {
-      let other = this.nearbyBoids[key];
-      let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < this.sight) {
-        sum.add(other.pos)
-        total++;
-      }
-    }
-    if (total > 0) {
-      sum.div(total);
-      sum.sub(this.pos)
-      sum.setMag(this.maxSpeed)
-      sum.sub(this.vel);
-      sum.limit(this.maxForce)
-    }
-    return sum;
-  }
-  separation() {
-    // let sight = 100;
-    let sum = new Vector2D(0, 0);
-    let total = 0;
-    for (let key in this.nearbyBoids) {
-      let other = this.nearbyBoids[key];
-      let dist = Math.sqrt(((other.pos.x - this.pos.x) ** 2) + (Math.abs((other.pos.y - this.pos.y) ** 2)));
-      if (other != this && dist < this.sight) {
-        let diff = new Vector2D(this.pos.x,this.pos.y);
-        diff.sub(other.pos)
-        diff.div(dist)
-        sum.add(diff)
-        total++;
-      }
-    }
-    if (total > 0) {
-      sum.div(total);
-      sum.setMag(this.maxSpeed)
-      sum.sub(this.vel);
-      sum.limit(this.maxForce)
-    }
-    return sum;
+    return desired;
   }
 
   flock(boids) {
-
-    let alignment = this.align(boids)
-    let cohesion = this.cohesion(boids)
-    let separation = this.separation(boids);
-
+    let alignment = this.steer('alignment')
+    let cohesion = this.steer('cohesion')
+    let separation = this.steer('separation');
+    
     Object.entries({alignment: alignment, cohesion: cohesion, separation: separation }).forEach(([key, value]) => {
-      const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
-      value.mul(htmlSlider);
-      // document.querySelector(`#${key}-value`).innerHTML = `${htmlSlider}x`;
-    });
-
-    const alignmentSlider = document.querySelector('#alignment');
-    const separationSlider = document.querySelector('#separation')
-    const cohesionSlider = document.querySelector('#cohesion');
-    // alignment.mul(alignmentSlider.value * 0.10);
-    // separation.mul(separationSlider.value * 0.10);
-    // cohesion.mul(cohesionSlider.value * 0.10);
-
+        const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
+        value.mul(htmlSlider);
+        // document.querySelector(`#${key}-value`).innerHTML = `${htmlSlider}x`;
+      });
+      
+      const sightSlider = document.querySelector('#sight')
+      const sightValue = document.querySelector('#sight-value');
+      // sightValue.innerHTML = `${(sightSlider.value)}`
+      
+      this.sight = sightSlider.value;
+      this.accel.add(separation);
+      this.accel.add(alignment);
+      this.accel.add(cohesion);
+    }
     
-
-
-    const sightSlider = document.querySelector('#sight')
-    const sightValue = document.querySelector('#sight-value');
-    // sightValue.innerHTML = `${(sightSlider.value)}`
-
+    update() {
+      this.pos.add(this.vel)
+      this.vel.add(this.accel)
+      this.vel.limit(this.maxSpeed);
+      this.accel.mul({x: 0, y: 0})
+    }
     
-    this.sight = sightSlider.value;
-    this.accel.add(separation);
-    this.accel.add(alignment);
-    this.accel.add(cohesion);
-  }
-  
-  update() {
-    this.pos.add(this.vel)
-    this.vel.add(this.accel)
-    this.vel.limit(this.maxSpeed);
-    this.accel.mul({x: 0, y: 0})
-  }
-  
-  draw(ctx, color) {
-    ctx.beginPath();
-    ctx.moveTo(this.pos.x,this.pos.y);
-    ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
-    ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
-    ctx.lineTo(this.pos.x, this.pos.y);
-    ctx.strokeStyle = color || 'green';
-    ctx.stroke();
-    ctx.closePath();
-
-    if (sightVisible) {
+    draw(ctx, color) {
       ctx.beginPath();
-      ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
-      ctx.closePath();
-      // ctx.setLineDash([5,10])
-      ctx.strokeStyle = 'blue';
+      ctx.moveTo(this.pos.x,this.pos.y);
+      ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
+      ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
+      ctx.lineTo(this.pos.x, this.pos.y);
+      ctx.strokeStyle = color || 'green';
       ctx.stroke();
+      ctx.closePath();
+      
+      if (sightVisible) {
+        ctx.beginPath();
+        ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
+        ctx.closePath();
+        // ctx.setLineDash([5,10])
+        ctx.strokeStyle = 'blue';
+        ctx.stroke();
+      }
+    }
+    drawSight(ctx) {
     }
   }
-  drawSight(ctx) {
-  }
-}
