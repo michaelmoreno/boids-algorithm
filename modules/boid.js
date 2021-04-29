@@ -1,8 +1,6 @@
 import { Vector2D, constantVector } from './vector.js';
-import { sightVisible, } from './sliders.js';
+import { sliders, sightVisible, } from './sliders.js';
 
-let count = 0;
-let counttwo = 0;
 export class Boid {
   constructor(id, pos, range) {
     this.id = id;
@@ -11,9 +9,8 @@ export class Boid {
     this.accel = new Vector2D(0, 0);
     this.maxForce = 0.1;
     this.maxSpeed = 3;
-    this.sight = 100;
-    this.nearbyBoids = {};
     this.range = range;
+    this.nearbyBoids = {};
   }
 
   pruneNearby() {
@@ -44,7 +41,7 @@ export class Boid {
     for (let key in this.nearbyBoids) {
       let near = this.nearbyBoids[key];
       let dist = Math.sqrt(((near.pos.x - this.pos.x) ** 2) + (Math.abs((near.pos.y - this.pos.y) ** 2)));
-      if (near != this && dist < this.sight) {
+      if (near != this && dist < this.range.r) {
         if (rule === 'alignment')
           desired.add(near.vel);
         else if (rule === 'cohesion')
@@ -69,53 +66,41 @@ export class Boid {
     return desired;
   }
 
-  flock(boids) {
+  flock() {
     let alignment = this.steer('alignment')
     let cohesion = this.steer('cohesion')
     let separation = this.steer('separation');
     
     Object.entries({alignment: alignment, cohesion: cohesion, separation: separation }).forEach(([key, value]) => {
-        const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
-        value.mul(htmlSlider);
-        // document.querySelector(`#${key}-value`).innerHTML = `${htmlSlider}x`;
-      });
+      const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
+      value.mul(htmlSlider);
+    });
       
-      const sightSlider = document.querySelector('#sight')
-      const sightValue = document.querySelector('#sight-value');
-      // sightValue.innerHTML = `${(sightSlider.value)}`
-      
-      this.sight = sightSlider.value;
-      this.accel.add(separation);
-      this.accel.add(alignment);
-      this.accel.add(cohesion);
-    }
+    this.range.r = sliders.sightSlider;
+    this.accel.add(separation);
+    this.accel.add(alignment);
+    this.accel.add(cohesion);
+  }
     
-    update() {
-      this.pos.add(this.vel)
-      this.vel.add(this.accel)
-      this.vel.limit(this.maxSpeed);
-      this.accel.mul({x: 0, y: 0})
-    }
+  update() {
+    this.pos.add(this.vel)
+    this.vel.add(this.accel)
+    this.vel.limit(this.maxSpeed);
+    this.accel.mul({x: 0, y: 0})
+  }
+  
+  draw(ctx, color) {
+    ctx.beginPath();
+    ctx.moveTo(this.pos.x,this.pos.y);
+    ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
+    ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
+    ctx.lineTo(this.pos.x, this.pos.y);
+    ctx.strokeStyle = color || 'green';
+    ctx.stroke();
+    ctx.closePath();
     
-    draw(ctx, color) {
-      ctx.beginPath();
-      ctx.moveTo(this.pos.x,this.pos.y);
-      ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
-      ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
-      ctx.lineTo(this.pos.x, this.pos.y);
-      ctx.strokeStyle = color || 'green';
-      ctx.stroke();
-      ctx.closePath();
-      
-      if (sightVisible) {
-        ctx.beginPath();
-        ctx.arc(this.pos.x, this.pos.y, this.sight, 0, Math.PI* 2, false);
-        ctx.closePath();
-        // ctx.setLineDash([5,10])
-        ctx.strokeStyle = 'blue';
-        ctx.stroke();
-      }
-    }
-    drawSight(ctx) {
+    if (sightVisible) {
+      this.range.draw();
     }
   }
+}

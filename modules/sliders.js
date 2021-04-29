@@ -1,4 +1,4 @@
-import { init } from '../script.js'
+import { init } from '../main.js'
 
 
 let sliders = {};
@@ -6,7 +6,7 @@ let sliders = {};
   const sliderInput = document.querySelector(`#${slider}`);
   const sliderValue = document.querySelector(`#${slider}-value`);
   const update = () => { 
-    sliderValue.innerHTML = sliderInput.value
+    sliderValue.innerHTML = sliderInput.value;
     sliders[`${slider}Slider`] = sliderInput.value;
   };
   update();

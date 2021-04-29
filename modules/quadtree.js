@@ -64,6 +64,7 @@ class Quadtree {
         this.boundary.draw('green')
       }
       for (let p of this.points) {
+        // console.log(this.points);
         if (range.contains(p)) {
           // ctx.beginPath();
           // ctx.arc(range.anchor.pos.x, range.anchor.pos.y, 10, 0, Math.PI * 2, false);

@@ -1,6 +1,6 @@
 import { Vector2D } from './modules/vector.js';
 import { Boid } from './modules/boid.js';
-import { Rectangle } from './modules/geometry.js';
+import { Rectangle, Circle } from './modules/geometry.js';
 import { Quadtree } from './modules/quadtree.js';
 import { sliders } from './modules/sliders.js'
 
@@ -16,22 +16,20 @@ function init() {
   boids = [];
   for (let i = 0; i < sliders.boidsSlider; i++) {
     let b = new Boid(i, new Vector2D(Math.random()*canvas.width, Math.random() * canvas.height));
-    let range = new Rectangle(b.pos.x, b.pos.y, 200, 200, b);
+    let range = new Circle(b.pos.x, b.pos.y, sliders.sightSlider, b);
     b.range = range;
     boids.push(b);
   }
 }
 
 
-let sightVisible = false;
-const sightSlider = document.querySelector(`#sight`)
-sightSlider.addEventListener('mousedown', function() {
-  sightVisible = true;
-})
-sightSlider.addEventListener('mouseup', function () {
-  sightVisible = false;
-})
+let count = 0;
 
+let mouseX = 500;
+let mouseY = 500;
+window.addEventListener('mousemove', (event) => {
+  [mouseX, mouseY] = [event.x, event.y];
+})
 
 let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
 let qtree;
@@ -44,21 +42,22 @@ function render() {
     qtree.insert(boid)
     
     boid.edges();
-    boid.flock(boids)
+    boid.flock()
     boid.update();
-    qtree.render();
     boid.pruneNearby();
   }
   
   for (let boid of boids) {
-    boid.range.x = boid.pos.x - boid.sight;
-    boid.range.y = boid.pos.y - boid.sight;
-    boid.range.w = boid.sight * 2;
-    boid.range.h = boid.sight * 2;
+    boid.range.x = boid.pos.x;
+    boid.range.y = boid.pos.y;
+    // boid.range.draw();
     qtree.query(boid.range);
     // boid.range.draw();
   }
-  
+  qtree.render();
+  if (count < 1) {
+    count++
+  }
   requestAnimationFrame(render);
 }
 
