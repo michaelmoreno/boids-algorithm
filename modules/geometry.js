@@ -58,9 +58,9 @@ export class Circle {
   }
   
   contains(point) {
-    const dist = Math.sqrt(((point.pos.x - this.x)**2) + Math.abs((point.pos.y - this.y)**2));
     if (point === this.anchor)
       return false
+    const dist = Math.sqrt(((point.pos.x - this.x)**2) + Math.abs((point.pos.y - this.y)**2));
     return (dist < this.r)
   }
 

@@ -1,8 +1,6 @@
 import { Vector2D, constantVector } from './vector.js';
 import { sliders, sightVisible, } from './sliders.js';
 
-let count = 0;
-
 export class Boid {
   constructor(id, pos, range) {
     this.id = id;
@@ -47,7 +45,8 @@ export class Boid {
     for (let key in this.nearbyBoids) {
       let near = this.nearbyBoids[key];
       let dist = Math.sqrt(((near.pos.x - this.pos.x) ** 2) + (Math.abs((near.pos.y - this.pos.y) ** 2)));
-      if (near != this && dist < this.range.r) {
+      
+      if (dist < this.range.r) {
           alignment.add(near.vel);
           cohesion.add(near.pos);
           const getSeparation = () => {

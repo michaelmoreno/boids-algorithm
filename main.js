@@ -24,17 +24,8 @@ function init() {
 }
 
 
-let count = 0;
-
-let mouseX = 500;
-let mouseY = 500;
-window.addEventListener('mousemove', (event) => {
-  [mouseX, mouseY] = [event.x, event.y];
-})
-
 let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
 let qtree;
-let time = [], fps, now;
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   qtree = new Quadtree(boundary, sliders.quadtreeSlider);
@@ -52,14 +43,9 @@ function render() {
   for (let boid of boids) {
     boid.range.x = boid.pos.x;
     boid.range.y = boid.pos.y;
-    // boid.range.draw();
     qtree.query(boid.range);
-    // boid.range.draw();
   }
   qtree.render();
-  if (count < 1) {
-    count++
-  }
   requestAnimationFrame(render);
   // utils.fpsCounter(ctx);
 }
