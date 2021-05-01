@@ -3,6 +3,7 @@ import { Boid } from './modules/boid.js';
 import { Rectangle, Circle } from './modules/geometry.js';
 import { Quadtree } from './modules/quadtree.js';
 import { sliders } from './modules/sliders.js'
+import { utils } from './modules/utils.js';
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -33,6 +34,7 @@ window.addEventListener('mousemove', (event) => {
 
 let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
 let qtree;
+let time = [], fps, now;
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   qtree = new Quadtree(boundary, sliders.quadtreeSlider);
@@ -59,10 +61,12 @@ function render() {
     count++
   }
   requestAnimationFrame(render);
+  // utils.fpsCounter(ctx);
 }
 
 init();
 render();
+
 
 export {
   ctx,

@@ -66,19 +66,8 @@ class Quadtree {
       for (let p of this.points) {
         // console.log(this.points);
         if (range.contains(p)) {
-          // ctx.beginPath();
-          // ctx.arc(range.anchor.pos.x, range.anchor.pos.y, 10, 0, Math.PI * 2, false);
-          // ctx.moveTo(range.anchor.pos.x, range.anchor.pos.y);
-          // ctx.lineTo(p.pos.x, p.pos.y)
-          // ctx.closePath();
-          // ctx.strokeStyle = 'blue';
-          // ctx.stroke();
-
-          
           range.anchor.nearbyBoids[`${p.id}`] = p;
           found.push(p);
-          // range.draw('blue')
-          // p.draw(ctx, false, 'blue');
         }
       }
       // console.log(this.divided);

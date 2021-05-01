@@ -1,6 +1,8 @@
 import { Vector2D, constantVector } from './vector.js';
 import { sliders, sightVisible, } from './sliders.js';
 
+let count = 0;
+
 export class Boid {
   constructor(id, pos, range) {
     this.id = id;
@@ -11,6 +13,7 @@ export class Boid {
     this.maxSpeed = 3;
     this.range = range;
     this.nearbyBoids = {};
+    this.steering = {};
   }
 
   pruneNearby() {
@@ -34,52 +37,58 @@ export class Boid {
       this.pos.y = window.innerHeight;
     }
   }
-
-  steer(rule) {
-    let desired = new Vector2D(0, 0);
+  
+  steer() {
+    let alignment = new Vector2D(0, 0);
+    let cohesion = new Vector2D(0, 0);
+    let separation = new Vector2D(0, 0);
     let total = 0;
+
     for (let key in this.nearbyBoids) {
       let near = this.nearbyBoids[key];
       let dist = Math.sqrt(((near.pos.x - this.pos.x) ** 2) + (Math.abs((near.pos.y - this.pos.y) ** 2)));
       if (near != this && dist < this.range.r) {
-        if (rule === 'alignment')
-          desired.add(near.vel);
-        else if (rule === 'cohesion')
-          desired.add(near.pos)
-        else if (rule === 'separation') {
-          let diff = new Vector2D(this.pos.x, this.pos.y);
-          diff.sub(near.pos);
-          diff.div(dist);
-          desired.add(diff)
-        }
+          alignment.add(near.vel);
+          cohesion.add(near.pos);
+          const getSeparation = () => {
+            let diff = new Vector2D(this.pos.x, this.pos.y);
+            diff.sub(near.pos);
+            diff.div(dist);
+            separation.add(diff)
+          };
+          getSeparation();
         total++;
       }
     }
     if (total > 0) {
-      desired.div(total);
-      if (rule === 'cohesion')
-        desired.sub(this.pos)
-      desired.setMag(this.maxSpeed);
-      desired.sub(this.vel)
-      desired.limit(this.maxForce);
+      let i = 0;
+      [alignment, cohesion, separation].forEach(val => {
+        i++
+        val.div(total);
+        if (i == 2)
+          val.sub(this.pos)
+        val.setMag(this.maxSpeed);
+        val.sub(this.vel);
+        val.limit(this.maxForce);
+      })
     }
-    return desired;
+    
+    this.steering.alignment = alignment;
+    this.steering.cohesion = cohesion;
+    this.steering.separation = separation;
   }
 
   flock() {
-    let alignment = this.steer('alignment')
-    let cohesion = this.steer('cohesion')
-    let separation = this.steer('separation');
-    
-    Object.entries({alignment: alignment, cohesion: cohesion, separation: separation }).forEach(([key, value]) => {
-      const htmlSlider = (document.querySelector(`#${key}`).value * 0.10).toFixed(2);
-      value.mul(htmlSlider);
+    this.steer()
+
+    Object.entries(this.steering).forEach(([key, value]) => {
+      value.mul(sliders[`${key}Slider`] * 0.10);
     });
-      
-    this.range.r = sliders.sightSlider;
-    this.accel.add(separation);
-    this.accel.add(alignment);
-    this.accel.add(cohesion);
+    this.range.r = sliders.sightSlider**2.5;
+
+    this.accel.add(this.steering.separation);
+    this.accel.add(this.steering.alignment);
+    this.accel.add(this.steering.cohesion);
   }
     
   update() {
@@ -95,9 +104,9 @@ export class Boid {
     ctx.lineTo(this.pos.x + (this.vel.x * 10), this.pos.y + (this.vel.y * 10));
     ctx.lineTo(this.pos.x, this.pos.y + (this.vel.y * 10));
     ctx.lineTo(this.pos.x, this.pos.y);
+    ctx.closePath();
     ctx.strokeStyle = color || 'green';
     ctx.stroke();
-    ctx.closePath();
     
     if (sightVisible) {
       this.range.draw();

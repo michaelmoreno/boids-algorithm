@@ -40,13 +40,8 @@ export class Vector2D {
     return this;
   }
   div(by) {
-    if (typeof other === 'object') {
-      this.x /= by.x;
-      this.y /= by.y;
-    } else {
-      this.x /= by;
-      this.y /= by;
-    }
+    this.x /= by;
+    this.y /= by;
     this.getMag();
     return this;
   }
@@ -96,6 +91,9 @@ export function drawTri(x1, y1, x2, y2) {
   ctx.font = '48px serif';
   ctx.fillText(dist, canvas.width / 2, canvas.height / 2)
 }
+
+let count = 0;
+
 
 // function drawCircle() {
 //   ctx.beginPath();
