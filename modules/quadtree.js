@@ -21,6 +21,7 @@ class Quadtree {
     this.southwest = new Quadtree(swBoundary, this.capacity)
     let nwBoundary = new Rectangle(x, y, halfWidth, halfHeight)
     this.northwest = new Quadtree(nwBoundary, this.capacity)
+    
     this.divided = true;
   }
   
@@ -52,61 +53,26 @@ class Quadtree {
     }
   }
   
-  query(range, found) {
-    if (!found) {
-      found = [];
-    }
-    
-    if (!this.boundary.intersects(range)) {
+  query(range) {
+    if (!this.boundary.intersects(range))
       return false;
-    } else {
-      if (quadtreeVisible){
-        this.boundary.draw('green')
+
+    if (quadtreeVisible)
+      this.boundary.draw('green')
+
+    for (let p of this.points) {
+      if (range.contains(p)) {
+        range.anchor.nearbyBoids[`${p.id}`] = p;
       }
-      for (let p of this.points) {
-        // console.log(this.points);
-        if (range.contains(p)) {
-          range.anchor.nearbyBoids[`${p.id}`] = p;
-          found.push(p);
-        }
-      }
-      // console.log(this.divided);
-      if (this.divided) {
-        this.northeast.query(range, found);
-        this.southeast.query(range, found);
-        this.southwest.query(range, found);
-        this.northwest.query(range, found);
-      }
-      return [found]
     }
-  }
-  
-  render() {
-    // this.boundary.draw('green');
-    // this.points.forEach(p => p.draw());
-    this.points.forEach(p => {
-      
-          // ctx.beginPath();
-          // ctx.moveTo(this.boundary.x + this.boundary.w/2, this.boundary.y + this.boundary.y/2);
-          // ctx.lineTo(p.pos.x, p.pos.y)
-          // ctx.closePath();
-          // ctx.strokeStyle = 'blue';
-          // ctx.fillStyle = 'blue';
-          // ctx.fill();
-          // ctx.stroke();
-          // this.boundary.draw('blue');
-      // ctx.lineTo(p.pos.x, p.pos.y)
-    });
-    
     if (this.divided) {
-      this.northeast.render();
-      this.southeast.render();
-      this.southwest.render();
-      this.northwest.render();
+      this.northeast.query(range);
+      this.southeast.query(range);
+      this.southwest.query(range);
+      this.northwest.query(range);
     }
   }
 }
-
 
 export {
   Rectangle,

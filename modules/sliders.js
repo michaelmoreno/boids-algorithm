@@ -18,14 +18,6 @@ let sliders = {};
   })
 });
 
-// const visibility = {sight: false, quadtree: false}
-// Object.entries(visibility).forEach(([key, value]) => {
-//   console.log(value);
-//   console.log(visibility.sight);
-//   document.querySelector(`#${key}`).addEventListener('mousedown', () => visibility[value] = true);
-//   document.querySelector(`#${key}`).addEventListener('mouseup', () => value = false);
-// })
-
 let sightVisible = false;
 let quadtreeVisible = false;
 

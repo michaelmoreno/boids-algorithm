@@ -42,6 +42,7 @@ canvas {
       justify-items: center;
       justify-content: space-between;
       align-items: center;
+      user-select: none;
       p {
         color: green;
         font-size: 15px;
@@ -60,8 +61,6 @@ canvas {
     font-family: 'Zen Dots';
   }
   .slider {
-    // margin-top: 15px;
-    // overflow: hidden;
     height: 7px;
     border-radius: 5px;
     -webkit-appearance: none;
@@ -70,8 +69,6 @@ canvas {
     outline: none;
     margin: 0 auto;
     width: 150px;
-    // top: 0;
-
   }
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;

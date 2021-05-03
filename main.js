@@ -7,7 +7,6 @@ import { utils } from './modules/utils.js';
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
-canvas.style.backgroundColor = 'black';
 function size() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
 size();
 window.addEventListener('resize', size());
@@ -22,7 +21,6 @@ function init() {
     boids.push(b);
   }
 }
-
 
 let boundary = new Rectangle(0, 0, canvas.width, canvas.height);
 let qtree;
@@ -39,13 +37,12 @@ function render() {
     boid.update();
     boid.pruneNearby();
   }
-  
   for (let boid of boids) {
     boid.range.x = boid.pos.x;
     boid.range.y = boid.pos.y;
     qtree.query(boid.range);
   }
-  qtree.render();
+  
   requestAnimationFrame(render);
   // utils.fpsCounter(ctx);
 }

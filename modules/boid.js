@@ -41,6 +41,7 @@ export class Boid {
     let cohesion = new Vector2D(0, 0);
     let separation = new Vector2D(0, 0);
     let total = 0;
+    let diff;
 
     for (let key in this.nearbyBoids) {
       let near = this.nearbyBoids[key];
@@ -49,13 +50,10 @@ export class Boid {
       if (dist < this.range.r) {
           alignment.add(near.vel);
           cohesion.add(near.pos);
-          const getSeparation = () => {
-            let diff = new Vector2D(this.pos.x, this.pos.y);
-            diff.sub(near.pos);
-            diff.div(dist);
-            separation.add(diff)
-          };
-          getSeparation();
+          diff = new Vector2D(this.pos.x, this.pos.y);
+          diff.sub(near.pos);
+          diff.div(dist);
+          separation.add(diff)
         total++;
       }
     }
@@ -80,11 +78,11 @@ export class Boid {
   flock() {
     this.steer()
 
-    Object.entries(this.steering).forEach(([key, value]) => {
-      value.mul(sliders[`${key}Slider`] * 0.10);
-    });
-    this.range.r = sliders.sightSlider**2.5;
-
+    this.steering.separation.mul(sliders.separationSlider * 0.10);
+    this.steering.alignment.mul(sliders.alignmentSlider * 0.10);
+    this.steering.cohesion.mul(sliders.cohesionSlider * 0.10);
+    
+    this.range.r = sliders.sightSlider**2.6;
     this.accel.add(this.steering.separation);
     this.accel.add(this.steering.alignment);
     this.accel.add(this.steering.cohesion);
