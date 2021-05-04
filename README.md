@@ -10,7 +10,7 @@ When all three of these rules are at play, a chaotic yet ordered pattern manifes
 ## main.js
 This is the top-level script that's inserted into index.html. It handles all of the canvas rendering and many of the callbacks to other scripts. 
 `Init()` Creates an array and populates it with boids.
-`Render()` recursively generates each frame, draws everything onto canvas, inserts boids into the quadtree, and controls steering behavior.
+`Render()` recursively calls itself to continuously generate each frame, draws everything onto canvas, inserts boids into the quadtree, and controls steering behavior.
 
 ## quadtree.js
 This file defines the class Quadtree, which serves as a spatial partitioning system to reduce big O complexity and speed up performance. Instead of every boid having to loop through every other boid to find boids which are nearby, the quadtree recursively subdivides the screen into quadrants once a certain number of boids have been inserted into it, with the remaining inserted into the following subdivided quadrants.
