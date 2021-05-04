@@ -1,9 +1,9 @@
 # boids-algorithm
 This is a flocking simulation based on Craig Reynold's 1986 Boids algorithm, built in vanilla JS and HTML5 Canvas.
 The flocking behavior emerges from three simple rules defined into each boid:
-Alignment: Boids will steer towards the average direction of nearby boids.
-Cohesion: Boids will steer towards the average position of nearby boids.
-Separation: Boids will steer away from any boids who get too close. 
+* Alignment: Boids will steer towards the average direction of nearby boids.
+* Cohesion: Boids will steer towards the average position of nearby boids.
+* Separation: Boids will steer away from any boids who get too close. 
 
 When all three of these rules are at play, a chaotic yet ordered pattern manifests that resembles not only the flocking behaviors we see in various animals, but also - at a high enough intensity - fluid dynamics.
 
